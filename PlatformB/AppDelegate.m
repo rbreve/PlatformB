@@ -12,6 +12,7 @@
 #import "GameConfig.h"
 #import "HelloWorldLayer.h"
 #import "RootViewController.h"
+#import "IntroLayer.h"
 
 @implementation AppDelegate
 
@@ -26,15 +27,15 @@
 	//
 #if GAME_AUTOROTATION == kGameAutorotationUIViewController
 
-//	CC_ENABLE_DEFAULT_GL_STATES();
-//	CCDirector *director = [CCDirector sharedDirector];
-//	CGSize size = [director winSize];
-//	CCSprite *sprite = [CCSprite spriteWithFile:@"Default.png"];
-//	sprite.position = ccp(size.width/2, size.height/2);
-//	sprite.rotation = -90;
-//	[sprite visit];
-//	[[director openGLView] swapBuffers];
-//	CC_ENABLE_DEFAULT_GL_STATES();
+	CC_ENABLE_DEFAULT_GL_STATES();
+	CCDirector *director = [CCDirector sharedDirector];
+	CGSize size = [director winSize];
+	CCSprite *sprite = [CCSprite spriteWithFile:@"Default.png"];
+	sprite.position = ccp(size.width/2, size.height/2);
+	sprite.rotation = -90;
+	[sprite visit];
+	[[director openGLView] swapBuffers];
+	CC_ENABLE_DEFAULT_GL_STATES();
 	
 #endif // GAME_AUTOROTATION == kGameAutorotationUIViewController	
 }
@@ -82,11 +83,8 @@
 	// By default, this template only supports Landscape orientations.
 	// Edit the RootViewController.m file to edit the supported orientations.
 	//
-#if GAME_AUTOROTATION == kGameAutorotationUIViewController
-	[director setDeviceOrientation:kCCDeviceOrientationPortrait];
-#else
-	[director setDeviceOrientation:kCCDeviceOrientationLandscapeLeft];
-#endif
+ 
+	[director setDeviceOrientation:kCCDeviceOrientationLandscapeRight];
 	
 	[director setAnimationInterval:1.0/60];
 	[director setDisplayFPS:YES];
@@ -94,6 +92,9 @@
 	
 	// make the OpenGLView a child of the view controller
 	[viewController setView:glView];
+    
+    [glView setMultipleTouchEnabled:YES];
+
 	
 	// make the View Controller a child of the main window
 	[window addSubview: viewController.view];
@@ -110,7 +111,7 @@
 	[self removeStartupFlicker];
 	
 	// Run the intro Scene
-	[[CCDirector sharedDirector] runWithScene: [HelloWorldLayer scene]];
+	[[CCDirector sharedDirector] runWithScene: [IntroLayer scene]];
 }
 
 
@@ -144,6 +145,15 @@
 	[window release];
 	
 	[director end];	
+}
+
+-(BOOL)shouldAutorotate{
+    return YES;
+}
+
+-(NSUInteger)supportedInterfaceOrientations{
+    
+    return UIInterfaceOrientationMaskLandscapeLeft|UIInterfaceOrientationMaskLandscapeRight;
 }
 
 - (void)applicationSignificantTimeChange:(UIApplication *)application {

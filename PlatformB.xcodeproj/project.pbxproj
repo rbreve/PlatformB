@@ -122,6 +122,20 @@
 		2E25273116935C080006F7BA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25273016935C080006F7BA /* AppDelegate.m */; };
 		2E25273416935C080006F7BA /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25273316935C080006F7BA /* RootViewController.m */; };
 		2E25273716935C080006F7BA /* HelloWorldLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25273616935C080006F7BA /* HelloWorldLayer.m */; };
+		2E25274416935C2A0006F7BA /* TileMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25273F16935C2A0006F7BA /* TileMap.m */; };
+		2E25274516935C2A0006F7BA /* IntroLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25274116935C2A0006F7BA /* IntroLayer.m */; };
+		2E25274616935C2A0006F7BA /* Character.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25274316935C2A0006F7BA /* Character.m */; };
+		2E25274C16935C3D0006F7BA /* donkiko.tmx in Resources */ = {isa = PBXBuildFile; fileRef = 2E25274716935C3D0006F7BA /* donkiko.tmx */; };
+		2E25274D16935C3D0006F7BA /* donkikotiles.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E25274816935C3D0006F7BA /* donkikotiles.png */; };
+		2E25274E16935C3D0006F7BA /* leftrun_default.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2E25274916935C3D0006F7BA /* leftrun_default.plist */; };
+		2E25274F16935C3D0006F7BA /* leftrun.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2E25274A16935C3D0006F7BA /* leftrun.plist */; };
+		2E25275016935C3D0006F7BA /* leftrun.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E25274B16935C3D0006F7BA /* leftrun.png */; };
+		2E252752169368600006F7BA /* Default-Landscape@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E252751169368600006F7BA /* Default-Landscape@2x~ipad.png */; };
+		2E2527551693A3440006F7BA /* Enemy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E2527541693A3440006F7BA /* Enemy.m */; };
+		2E2527571693A5910006F7BA /* red.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E2527561693A5910006F7BA /* red.png */; };
+		2E2527591693DC100006F7BA /* elevator.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E2527581693DC100006F7BA /* elevator.png */; };
+		2E2527601693E6C80006F7BA /* MovingSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25275F1693E6C60006F7BA /* MovingSprite.m */; };
+		2E25276B1694B7CC0006F7BA /* Elevator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25276A1694B7CC0006F7BA /* Elevator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -360,6 +374,26 @@
 		2E25273516935C080006F7BA /* HelloWorldLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelloWorldLayer.h; sourceTree = "<group>"; };
 		2E25273616935C080006F7BA /* HelloWorldLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HelloWorldLayer.m; sourceTree = "<group>"; };
 		2E25273816935C080006F7BA /* GameConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameConfig.h; sourceTree = "<group>"; };
+		2E25273E16935C2A0006F7BA /* TileMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TileMap.h; sourceTree = "<group>"; };
+		2E25273F16935C2A0006F7BA /* TileMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TileMap.m; sourceTree = "<group>"; };
+		2E25274016935C2A0006F7BA /* IntroLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroLayer.h; sourceTree = "<group>"; };
+		2E25274116935C2A0006F7BA /* IntroLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroLayer.m; sourceTree = "<group>"; };
+		2E25274216935C2A0006F7BA /* Character.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Character.h; sourceTree = "<group>"; };
+		2E25274316935C2A0006F7BA /* Character.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Character.m; sourceTree = "<group>"; };
+		2E25274716935C3D0006F7BA /* donkiko.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = donkiko.tmx; sourceTree = "<group>"; };
+		2E25274816935C3D0006F7BA /* donkikotiles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = donkikotiles.png; sourceTree = "<group>"; };
+		2E25274916935C3D0006F7BA /* leftrun_default.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = leftrun_default.plist; sourceTree = "<group>"; };
+		2E25274A16935C3D0006F7BA /* leftrun.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = leftrun.plist; sourceTree = "<group>"; };
+		2E25274B16935C3D0006F7BA /* leftrun.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = leftrun.png; sourceTree = "<group>"; };
+		2E252751169368600006F7BA /* Default-Landscape@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x~ipad.png"; sourceTree = "<group>"; };
+		2E2527531693A3430006F7BA /* Enemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Enemy.h; sourceTree = "<group>"; };
+		2E2527541693A3440006F7BA /* Enemy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Enemy.m; sourceTree = "<group>"; };
+		2E2527561693A5910006F7BA /* red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = red.png; path = Resources/red.png; sourceTree = "<group>"; };
+		2E2527581693DC100006F7BA /* elevator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = elevator.png; path = Resources/elevator.png; sourceTree = "<group>"; };
+		2E25275E1693E6C60006F7BA /* MovingSprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovingSprite.h; sourceTree = "<group>"; };
+		2E25275F1693E6C60006F7BA /* MovingSprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MovingSprite.m; sourceTree = "<group>"; };
+		2E2527691694B7C80006F7BA /* Elevator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Elevator.h; sourceTree = "<group>"; };
+		2E25276A1694B7CC0006F7BA /* Elevator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Elevator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -384,6 +418,7 @@
 		2E2525BE16935C060006F7BA = {
 			isa = PBXGroup;
 			children = (
+				2E252751169368600006F7BA /* Default-Landscape@2x~ipad.png */,
 				2E2525DD16935C060006F7BA /* PlatformB */,
 				2E2525CC16935C060006F7BA /* Frameworks */,
 				2E2525CA16935C060006F7BA /* Products */,
@@ -416,6 +451,18 @@
 		2E2525DD16935C060006F7BA /* PlatformB */ = {
 			isa = PBXGroup;
 			children = (
+				2E2527691694B7C80006F7BA /* Elevator.h */,
+				2E25276A1694B7CC0006F7BA /* Elevator.m */,
+				2E25273E16935C2A0006F7BA /* TileMap.h */,
+				2E25273F16935C2A0006F7BA /* TileMap.m */,
+				2E25275E1693E6C60006F7BA /* MovingSprite.h */,
+				2E25275F1693E6C60006F7BA /* MovingSprite.m */,
+				2E25274016935C2A0006F7BA /* IntroLayer.h */,
+				2E25274116935C2A0006F7BA /* IntroLayer.m */,
+				2E2527531693A3430006F7BA /* Enemy.h */,
+				2E2527541693A3440006F7BA /* Enemy.m */,
+				2E25274216935C2A0006F7BA /* Character.h */,
+				2E25274316935C2A0006F7BA /* Character.m */,
 				2E25272F16935C080006F7BA /* AppDelegate.h */,
 				2E25273016935C080006F7BA /* AppDelegate.m */,
 				2E25273216935C080006F7BA /* RootViewController.h */,
@@ -433,6 +480,13 @@
 		2E2525DE16935C060006F7BA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2E2527581693DC100006F7BA /* elevator.png */,
+				2E2527561693A5910006F7BA /* red.png */,
+				2E25274716935C3D0006F7BA /* donkiko.tmx */,
+				2E25274816935C3D0006F7BA /* donkikotiles.png */,
+				2E25274916935C3D0006F7BA /* leftrun_default.plist */,
+				2E25274A16935C3D0006F7BA /* leftrun.plist */,
+				2E25274B16935C3D0006F7BA /* leftrun.png */,
 				2E2525DF16935C060006F7BA /* Default.png */,
 				2E2525E116935C060006F7BA /* fps_images.png */,
 				2E2525E316935C060006F7BA /* Icon-72.png */,
@@ -817,6 +871,14 @@
 				2E2525EC16935C060006F7BA /* Icon.png in Resources */,
 				2E2525EE16935C060006F7BA /* Icon@2x.png in Resources */,
 				2E2525F116935C060006F7BA /* iTunesArtwork in Resources */,
+				2E25274C16935C3D0006F7BA /* donkiko.tmx in Resources */,
+				2E25274D16935C3D0006F7BA /* donkikotiles.png in Resources */,
+				2E25274E16935C3D0006F7BA /* leftrun_default.plist in Resources */,
+				2E25274F16935C3D0006F7BA /* leftrun.plist in Resources */,
+				2E25275016935C3D0006F7BA /* leftrun.png in Resources */,
+				2E252752169368600006F7BA /* Default-Landscape@2x~ipad.png in Resources */,
+				2E2527571693A5910006F7BA /* red.png in Resources */,
+				2E2527591693DC100006F7BA /* elevator.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -925,6 +987,12 @@
 				2E25273116935C080006F7BA /* AppDelegate.m in Sources */,
 				2E25273416935C080006F7BA /* RootViewController.m in Sources */,
 				2E25273716935C080006F7BA /* HelloWorldLayer.m in Sources */,
+				2E25274416935C2A0006F7BA /* TileMap.m in Sources */,
+				2E25274516935C2A0006F7BA /* IntroLayer.m in Sources */,
+				2E25274616935C2A0006F7BA /* Character.m in Sources */,
+				2E2527551693A3440006F7BA /* Enemy.m in Sources */,
+				2E2527601693E6C80006F7BA /* MovingSprite.m in Sources */,
+				2E25276B1694B7CC0006F7BA /* Elevator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -976,9 +1044,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = PlatformB/Prefix.pch;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = PlatformB/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -991,9 +1062,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = PlatformB/Prefix.pch;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = PlatformB/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 2;
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
