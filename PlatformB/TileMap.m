@@ -10,13 +10,16 @@
 #import "MovingSprite.h"
 
 @implementation TileMap
-@synthesize tileMap = _tileMap, background = _background, walls = _walls, elevators = _elevators, elevatorList = _elevatorList;
+@synthesize tileMap = _tileMap, background = _background, walls = _walls, elevators = _elevators, elevatorList = _elevatorList, hazards = _hazards, fruits = _fruits;
 -(id) init
 {
     if( (self=[super init] )) {
         self.tileMap = [CCTMXTiledMap tiledMapWithTMXFile:@"donkiko.tmx"];
         self.walls = [self.tileMap layerNamed:@"walls"];
         self.elevators = [self.tileMap layerNamed:@"elevators"];
+        self.hazards = [self.tileMap layerNamed:@"hazards"];
+        self.fruits = [self.tileMap layerNamed:@"fruits"];
+
         [self addChild:self.tileMap z:-1];
             
         

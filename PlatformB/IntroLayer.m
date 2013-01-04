@@ -47,7 +47,7 @@
             for( int y=0; y< s.height; y++ ) {
                 unsigned int tgid = [self.bgTile.elevators tileGIDAt:ccp(x,y)];
                 if (tgid){
-                    NSLog(@"tgid %d", tgid);
+                    //NSLog(@"tgid %d", tgid);
                      
                     Elevator *elevatorSprite = [[Elevator alloc] init];
                     
@@ -113,7 +113,7 @@
         float previousX = screenSize.width - previousTouchLocation.y;
         float currentX = touchLocation.x;
         
-        NSLog(@"previous: %f touchLocation %f", previousX, touchLocation.x);
+        //NSLog(@"previous: %f touchLocation %f", previousX, touchLocation.x);
         
         if (previousX > 100 && previousX < 400 && currentX <= 100) {
             self.dude.walkLeft = YES;
@@ -141,17 +141,17 @@
         if (touchLocation.x < 100) {
             self.dude.walkLeft = YES;
             self.dude.walkRight = NO;
-            NSLog(@"left");
+           // NSLog(@"left");
         }else if (touchLocation.x <= 400){
             self.dude.walkRight = YES;
             self.dude.walkLeft = NO;
-            NSLog(@"right");
+            //NSLog(@"right");
             
         }
         
         if (touchLocation.x > 900){
             self.dude.mightAsWellJump = YES;
-            NSLog(@"jump");
+           // NSLog(@"jump");
             
         }
     }
@@ -160,7 +160,7 @@
 
 
 -(void) ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    NSLog(@"touch ended");
+    //NSLog(@"touch ended");
     for (UITouch *t in touches) {
         CGPoint touchLocation = [self convertTouchToNodeSpace:t];
         
@@ -266,6 +266,46 @@
     p.position =   p.desiredPosition ;
 }
 
+-(void) characterDie:(int) dieCause{
+    [self.dude.bear runAction:[CCFadeOut actionWithDuration:0.3]];
+    self.dude.bear.position = ccp(100,500);
+    [self.dude.bear runAction:[CCFadeIn actionWithDuration:0.5]];
+
+}
+
+
+-(void) checkForFruits:(Character *)p{
+    NSArray *tiles = [self getSurroundingTilesAtPosition:p.bear.position forLayer:self.bgTile.fruits];
+    for (NSDictionary *dic in tiles) {
+        
+        CGRect tileRect = CGRectMake([[dic objectForKey:@"x"] floatValue], [[dic objectForKey:@"y"] floatValue], self.bgTile.tileMap.tileSize.width, self.bgTile.tileMap.tileSize.height);
+        
+        CGRect pRect = [p collisionBoundingBox];
+        
+        if ([[dic objectForKey:@"gid"] intValue] && CGRectIntersectsRect(pRect, tileRect)) {
+            NSLog(@"Got Fruit");
+            [self.bgTile.fruits removeTileAt:[[dic objectForKey:@"tilePos"] CGPointValue]];
+        }
+        
+    }
+}
+
+
+-(void) checkForHazards:(Character *)p{
+    NSArray *tiles = [self getSurroundingTilesAtPosition:p.bear.position forLayer:self.bgTile.hazards];
+    for (NSDictionary *dic in tiles) {
+        
+        CGRect tileRect = CGRectMake([[dic objectForKey:@"x"] floatValue], [[dic objectForKey:@"y"] floatValue], self.bgTile.tileMap.tileSize.width, self.bgTile.tileMap.tileSize.height);
+        
+        CGRect pRect = [p collisionBoundingBox];
+        
+        if ([[dic objectForKey:@"gid"] intValue] && CGRectIntersectsRect(pRect, tileRect)) {
+            [self characterDie:0];
+        }
+        
+    }
+}
+
 
 -(void)checkForAndResolveCollisions2:(Character *)p {
     
@@ -338,14 +378,7 @@
     
     p.bear.position =   p.desiredPosition ;
 }
-
-
-
-
-
-
-
-
+ 
  
 
 -(void) moving:(ccTime)dt{
@@ -359,6 +392,9 @@
     [self checkForAndResolveCollisions2:self.dude];
     [self checkForAndResolveCollisions:self.enemy];
     [self checkForCollisionsWithMovingObjects:self.dude];
+    
+    [self checkForHazards:self.dude];
+    [self checkForFruits:self.dude];
     
     
     //[self setViewpointCenter: self.dude.bear.position];

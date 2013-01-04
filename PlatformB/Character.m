@@ -54,14 +54,14 @@
     
     if (self.walkRight) {
         self.velocity = ccpAdd(self.velocity, forwardStep);
-        self.bear.flipX = YES;
+        self.bear.flipX = NO;
         if (!self.moving) {
             [_bear runAction:self.walkAction];
             self.moving = YES;
         }
     }
     else if (self.walkLeft) {
-        self.bear.flipX = NO;
+        self.bear.flipX = YES;
         self.velocity = ccpAdd(self.velocity, backwardStep);
         if (!self.moving) {
             [_bear runAction:self.walkAction];
@@ -97,25 +97,26 @@
 
         self.velocity = ccp(0.0, 0.0);
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"leftrun.plist"];
-        CCSpriteBatchNode *spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"leftrun.png"];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"walker.plist"];
+        CCSpriteBatchNode *spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"walker.png"];
         [self addChild:spriteSheet z:100 tag:4];
     
+        NSString *filename = @"LRUN_000";
         
         // Load up the frames of our animation
         NSMutableArray *walkAnimFrames = [NSMutableArray array];
         NSString* z=@"";
         
-        for(int i = 0; i <= 17; ++i) {
+        for(int i = 0; i <= 5; ++i) {
             z= i < 10 ? @"0" : @"";
             
-            [walkAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"LRUN_000%@%d.png",z, i]]];
+            [walkAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"%@%@%d.png",filename,z, i]]];
         }
         
         CCAnimation *walkAnim =  [CCAnimation animationWithFrames:walkAnimFrames delay:0.04f];
  
         // Create a sprite for our bear
-        self.bear = [CCSprite spriteWithSpriteFrameName:@"LRUN_00000.png"];
+        self.bear = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"%@00.png", filename]];
         self.bear.scale = 0.5;
         _bear.position = ccp(200, 310);
       
