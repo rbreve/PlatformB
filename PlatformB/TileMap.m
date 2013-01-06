@@ -10,7 +10,8 @@
 #import "MovingSprite.h"
 
 @implementation TileMap
-@synthesize tileMap = _tileMap, background = _background, walls = _walls, elevators = _elevators, elevatorList = _elevatorList, hazards = _hazards, fruits = _fruits;
+@synthesize tileMap = _tileMap, background = _background, walls = _walls, elevators = _elevators, elevatorList = _elevatorList, hazards = _hazards, fruits = _fruits, pushable = _pushable;
+
 -(id) init
 {
     if( (self=[super init] )) {
@@ -19,6 +20,7 @@
         self.elevators = [self.tileMap layerNamed:@"elevators"];
         self.hazards = [self.tileMap layerNamed:@"hazards"];
         self.fruits = [self.tileMap layerNamed:@"fruits"];
+        self.pushable = [self.tileMap layerNamed:@"pushable"];
 
         [self addChild:self.tileMap z:-1];
             

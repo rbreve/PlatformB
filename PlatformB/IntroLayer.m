@@ -19,6 +19,8 @@
 @interface IntroLayer()
 @property (nonatomic, retain) NSMutableArray *elevators;
 @property (nonatomic, retain) NSMutableArray *elevatorList;
+@property (nonatomic, retain) NSMutableArray *movableBlocks;
+
 @end
 
 @implementation IntroLayer{
@@ -38,32 +40,34 @@
 }
 
 
--(void)loadElevatorList{
+-(NSMutableArray *)loadElevatorList:(CCTMXLayer *) layer type:(int) type {
      
         
-        self.elevatorList = [[NSMutableArray alloc] init];
+        NSMutableArray *tiles = [[NSMutableArray alloc] init];
         CGSize s = [self.bgTile.elevators layerSize];
         for( int x=0; x<s.width;x++) {
             for( int y=0; y< s.height; y++ ) {
-                unsigned int tgid = [self.bgTile.elevators tileGIDAt:ccp(x,y)];
+                unsigned int tgid = [layer tileGIDAt:ccp(x,y)];
                 if (tgid){
                     //NSLog(@"tgid %d", tgid);
                      
                     Elevator *elevatorSprite = [[Elevator alloc] init];
                     
+                    elevatorSprite.type = type;
                     elevatorSprite.gId = x+y*10;
                      
 
-                    elevatorSprite.initPosition = ccp((x)*self.bgTile.tileMap.tileSize.width,   (20-y-1)*self.bgTile.tileMap.tileSize.height);
+                    elevatorSprite.initPosition = ccp((x)*self.bgTile.tileMap.tileSize.width,   (self.bgTile.tileMap.mapSize.height-y-1)*self.bgTile.tileMap.tileSize.height);
                     
-                    [self.elevatorList addObject:elevatorSprite];
+                    [tiles addObject:elevatorSprite];
                     
-                    [self.bgTile.elevators removeTileAt:ccp(x,y)];
+                    [layer removeTileAt:ccp(x,y)];
                     
                 }
                
             }
         }
+    return tiles;
      
 }
 
@@ -257,6 +261,8 @@
                     p.desiredPosition = ccp(p.desiredPosition.x - intersection.size.width, p.desiredPosition.y);
                     p.walkLeft = YES;
                     p.walkRight = NO;
+                }else{
+                    NSLog(@"LOL DIAGONAL");
                 }
         
             }
@@ -306,6 +312,56 @@
     }
 }
 
+-(void) checkForMovableObjectCollisions:(NSMutableArray *) object{
+    
+}
+
+-(void) checkForCollisionsWithMovableObjects:(NSMutableArray *) objects withCharacter:(Character *)character{
+    for (Elevator *elevator in objects) {
+        CCSprite *sprite = (CCSprite *)[self.bgTile getChildByTag:elevator.gId];
+        if ( CGRectIntersectsRect([sprite boundingBox], [character collisionBoundingBox])) {
+            CGRect intersection = CGRectIntersection([sprite boundingBox], [character collisionBoundingBox]);
+            
+            character.onGround = YES;
+            
+            CGPoint charPosition = character.desiredPosition;
+            CGPoint spritePosition = sprite.position;
+            
+            //bellow
+            if ((character.desiredPosition.y >= sprite.position.y + [sprite boundingBox].size.height)&&(character.onGround)) {
+                
+                charPosition.y = character.desiredPosition.y + intersection.size.height;
+                //otherwise it will fall hard
+                character.velocity = ccp(character.velocity.x, 0);
+                
+                character.desiredPosition = charPosition;
+                character.bear.position = character.desiredPosition;
+            }
+            
+            //TODO con bounding box
+            
+           // NSLog(@"char position %f %f h:%f, sprite position %f %f", charPosition.x,charPosition.y,[character.bear boundingBox].size.height,  spritePosition.x, spritePosition.y);
+            
+            float charHeightOffset = [character.bear boundingBox].size.height / 2;
+            
+            //right side
+            if ((charPosition.x > spritePosition.x)&&(spritePosition.y+charHeightOffset == charPosition.y)) {
+                spritePosition.x -= intersection.size.width;
+            }else if ((charPosition.x < spritePosition.x)&&(spritePosition.y+charHeightOffset == charPosition.y)) {
+                spritePosition.x += intersection.size.width;
+            }
+            
+            if (elevator.type == isMovable){
+                sprite.position = spritePosition;
+            }
+            
+        }
+    }
+}
+
+
+ 
+
 
 -(void)checkForAndResolveCollisions2:(Character *)p {
     
@@ -332,12 +388,17 @@
                 if (tileIndx == 0) {
                     //tile is directly below player
                     p.desiredPosition = ccp(p.desiredPosition.x, p.desiredPosition.y + intersection.size.height);
+                    
+                    //Lava Effect Sinks se unde
+                    //p.desiredPosition = ccp(p.desiredPosition.x, p.bear.position.y);
+                    
                     p.velocity = ccp(p.velocity.x, 0.0);
                     p.onGround = YES;
                 } else if (tileIndx == 1) {
                     //tile is directly above player
+                    NSLog(@"Above");
                     p.desiredPosition = ccp(p.desiredPosition.x, p.bear.position.y - intersection.size.height);
-                    p.velocity = ccp(p.velocity.x, 0.0);
+                    p.velocity = ccp(p.velocity.x, -100);
                 } else if (tileIndx == 2) {
                     //tile is left of player
                     p.desiredPosition = ccp(p.desiredPosition.x + intersection.size.width, p.desiredPosition.y);
@@ -345,33 +406,8 @@
                     //tile is right of player
                     p.desiredPosition = ccp(p.desiredPosition.x - intersection.size.width, p.desiredPosition.y);
                 }
-                /*
-                else {
-                    if (intersection.size.width > intersection.size.height) {
-                        //tile is diagonal, but resolving collision vertially
-                        p.velocity = ccp(p.velocity.x, 0.0);
-                        float resolutionHeight;
-                        if (tileIndx > 5) {
-                            resolutionHeight = -intersection.size.height;
-                            p.onGround = YES;
-                        } else {
-                            resolutionHeight = intersection.size.height;
-                        }
-                        
-                        p.desiredPosition = ccp(p.desiredPosition.x, p.desiredPosition.y + resolutionHeight );
-                        
-                    } else {
-                        float resolutionWidth;
-                        if (tileIndx == 6 || tileIndx == 4) {
-                            resolutionWidth = intersection.size.width;
-                        } else {
-                            resolutionWidth = -intersection.size.width;
-                        }
-                        p.desiredPosition = ccp(p.desiredPosition.x + resolutionWidth , p.desiredPosition.y);
-                        
-                    }
-                }
-                 */
+                
+               
             }
         }
     }
@@ -384,14 +420,24 @@
 -(void) moving:(ccTime)dt{
     
     [self.dude update:dt];
-    [self.enemy update:dt];
-    [self moveElevators];
+    
+    //[self.enemy update:dt];
+    //[self checkForAndResolveCollisions:self.enemy];
+
+    [self moveElevators:self.elevatorList];
     
     self.dude.bear.position = self.dude.desiredPosition;
     
     [self checkForAndResolveCollisions2:self.dude];
-    [self checkForAndResolveCollisions:self.enemy];
-    [self checkForCollisionsWithMovingObjects:self.dude];
+    
+    
+    //[self checkForCollisionsWithMovingObjects:self.dude];
+    
+    [self checkForCollisionsWithMovableObjects:self.elevatorList withCharacter:self.dude];
+    
+    [self checkForCollisionsWithMovableObjects:self.movableBlocks withCharacter:self.dude];
+
+    [self checkForMovableObjectCollisions:self.movableBlocks];
     
     [self checkForHazards:self.dude];
     [self checkForFruits:self.dude];
@@ -417,32 +463,15 @@
     self.bgTile.tileMap.position = viewPoint;
 }
 
--(void) checkForCollisionsWithMovingObjects:(Character *)character{
-    for (Elevator *elevator in self.elevatorList) {
-        CCSprite *sprite = (CCSprite *)[self.bgTile getChildByTag:elevator.gId];
-        
-        
-        if ( CGRectIntersectsRect([sprite boundingBox], [self.dude collisionBoundingBox])) {
-             character.onGround = YES;
-            if ((character.desiredPosition.y >= sprite.position.y + [sprite boundingBox].size.height)&&(character.onGround)) {
-                CGPoint charPosition = character.desiredPosition;
-                //NSLog(@"char y %f elevator y %f", charPosition.y, sprite.position.y+[sprite boundingBox].size.height);
-                charPosition.y = sprite.position.y + [sprite boundingBox].size.height + 10;
-                character.desiredPosition = charPosition;
-                character.bear.position = character.desiredPosition;
-               
-            }
-        }
-    }
-}
 
--(void) moveElevators{
-    for (Elevator *elevator in self.elevatorList) {
+
+-(void) moveElevators:(NSMutableArray *)elevators{
+    for (Elevator *elevator in elevators) {
         CCSprite *sprite = (CCSprite *)[self.bgTile getChildByTag:elevator.gId];
         CGPoint spritePosition = sprite.position;
         
         if (elevator.movingUp) {
-            if (spritePosition.y == elevator.initPosition.y) {
+            if (spritePosition.y >= elevator.initPosition.y) {
                 elevator.movingUp = NO;
             }
             else{
@@ -450,7 +479,7 @@
             }
         }else{
             
-            if (spritePosition.y == elevator.initPosition.y - 100) {
+            if (spritePosition.y <= elevator.initPosition.y - 100) {
                 elevator.movingUp = YES;
             }else{
                 spritePosition.y -=1;
@@ -461,26 +490,40 @@
     }
 }
 
-
--(void) initElevators{
-    [self loadElevatorList];
-    for (Elevator *elevator in self.elevatorList) {
-        CCSprite *sprite = [CCSprite spriteWithFile:@"elevator.png"];
+-(void) addElevatorFromFilename:(NSString *)spriteName  fromTiles:(NSMutableArray *)tiles inLayer:(CCLayer *)layer{
+    for (Elevator *elevator in tiles) {
+        
+        CCSprite *sprite = [CCSprite spriteWithFile:spriteName];
         
         sprite.tag = elevator.gId;
-        [self.bgTile addChild:sprite];
+        [layer addChild:sprite];
         sprite.anchorPoint = ccp(0, 0);
-        sprite.position = elevator.initPosition;
+        
+        CGPoint initPosition = elevator.initPosition;
+        //randomize y position
+        //initPosition.y = initPosition.y-arc4random()%150;
+        
+        sprite.position = initPosition;
         
     }
+}
+
+-(void) initElevators{
+   
+    self.elevatorList = [self loadElevatorList:self.bgTile.elevators type:isElevator];
+    [self addElevatorFromFilename:@"elevator.png" fromTiles:self.elevatorList inLayer:self.bgTile];
+    
+
+    self.movableBlocks = [self loadElevatorList:self.bgTile.pushable type:isMovable];
+    [self addElevatorFromFilename:@"pushable.png" fromTiles:self.movableBlocks inLayer:self.bgTile];
+    
+    
+  
 }
 
 -(void) onEnter
 {
 	[super onEnter];
-    
-    
-    
     
     self.bgTile = [TileMap node];
     self.bgTile.position = ccp(0, 0);
@@ -489,14 +532,13 @@
     self.dude = [Character node];
     [self.bgTile addChild:self.dude z:15];
     
-    
     self.enemy = [[Enemy alloc] initWithFile:@"red.png"];
     [self.bgTile addChild:self.enemy];
+    self.enemy.anchorPoint = ccp(0,0);
     self.enemy.position = ccp(140,550);
     self.enemy.walkLeft = YES;
     
     [self initElevators];
-    [self moveElevators];
      
 }
 

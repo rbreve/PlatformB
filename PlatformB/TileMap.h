@@ -19,6 +19,8 @@
 @property (nonatomic, retain) CCTMXLayer *elevators;
 @property (nonatomic, retain) CCTMXLayer *hazards;
 @property (nonatomic, retain) CCTMXLayer *fruits;
+@property (nonatomic, retain) CCTMXLayer *pushable;
+
 
 @property (nonatomic, retain) NSMutableArray *elevatorList;
 

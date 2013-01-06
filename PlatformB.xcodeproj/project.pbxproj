@@ -136,6 +136,7 @@
 		2E2527591693DC100006F7BA /* elevator.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E2527581693DC100006F7BA /* elevator.png */; };
 		2E2527601693E6C80006F7BA /* MovingSprite.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25275F1693E6C60006F7BA /* MovingSprite.m */; };
 		2E25276B1694B7CC0006F7BA /* Elevator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E25276A1694B7CC0006F7BA /* Elevator.m */; };
+		2E3D3F2C169902BE00820985 /* pushable.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E3D3F2B169902BE00820985 /* pushable.png */; };
 		2EB6664316961DDE001B3444 /* walker.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2EB6664116961DDE001B3444 /* walker.plist */; };
 		2EB6664416961DDE001B3444 /* walker.png in Resources */ = {isa = PBXBuildFile; fileRef = 2EB6664216961DDE001B3444 /* walker.png */; };
 /* End PBXBuildFile section */
@@ -396,6 +397,7 @@
 		2E25275F1693E6C60006F7BA /* MovingSprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MovingSprite.m; sourceTree = "<group>"; };
 		2E2527691694B7C80006F7BA /* Elevator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Elevator.h; sourceTree = "<group>"; };
 		2E25276A1694B7CC0006F7BA /* Elevator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Elevator.m; sourceTree = "<group>"; };
+		2E3D3F2B169902BE00820985 /* pushable.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pushable.png; path = Resources/pushable.png; sourceTree = "<group>"; };
 		2EB6664116961DDE001B3444 /* walker.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = walker.plist; sourceTree = "<group>"; };
 		2EB6664216961DDE001B3444 /* walker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = walker.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -484,6 +486,7 @@
 		2E2525DE16935C060006F7BA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2E3D3F2B169902BE00820985 /* pushable.png */,
 				2EB6664116961DDE001B3444 /* walker.plist */,
 				2EB6664216961DDE001B3444 /* walker.png */,
 				2E2527581693DC100006F7BA /* elevator.png */,
@@ -887,6 +890,7 @@
 				2E2527591693DC100006F7BA /* elevator.png in Resources */,
 				2EB6664316961DDE001B3444 /* walker.plist in Resources */,
 				2EB6664416961DDE001B3444 /* walker.png in Resources */,
+				2E3D3F2C169902BE00820985 /* pushable.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
