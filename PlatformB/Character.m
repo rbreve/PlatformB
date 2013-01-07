@@ -81,24 +81,20 @@
     
     self.desiredPosition = ccpAdd(self.bear.position, stepVelocity);
    
-    if (self.desiredPosition.y < 10) {
-        self.desiredPosition = ccp(self.desiredPosition.x, 10);
-        self.onGround = YES;
-    }
+ 
     
 }
   
-
--(id) init{
+-(id) initWithSpriteList:(NSString *) plistFilename pngFilename:(NSString *) pngFilename spriteNames:(NSString *) spriteName{
     if( (self=[super init]) ) {
-
+        
         self.velocity = ccp(0.0, 0.0);
         
-        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:@"walker.plist"];
-        CCSpriteBatchNode *spriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"walker.png"];
+        [[CCSpriteFrameCache sharedSpriteFrameCache] addSpriteFramesWithFile:plistFilename];
+        CCSpriteBatchNode *spriteSheet = [CCSpriteBatchNode batchNodeWithFile:pngFilename];
         [self addChild:spriteSheet z:100 tag:4];
-    
-        NSString *filename = @"LRUN_000";
+        
+        //spriteName = @"LRUN_000";
         
         // Load up the frames of our animation
         NSMutableArray *walkAnimFrames = [NSMutableArray array];
@@ -107,26 +103,28 @@
         for(int i = 0; i <= 5; ++i) {
             z= i < 10 ? @"0" : @"";
             
-            [walkAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"%@%@%d.png",filename,z, i]]];
+            [walkAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"%@%@%d.png",spriteName,z, i]]];
         }
         
         CCAnimation *walkAnim =  [CCAnimation animationWithFrames:walkAnimFrames delay:0.04f];
- 
+        
         // Create a sprite for our bear
-        self.bear = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"%@00.png", filename]];
+        self.bear = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"%@00.png", spriteName]];
         self.bear.scale = 0.5;
         _bear.position = ccp(200, 310);
-      
+        
         
         //self.walkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]];
         
         self.walkAction =         [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim]];
-
+        
         [spriteSheet addChild:_bear z:1000 tag:10];
-
+        
     }
     return self;
 }
+
+
 
 -(void) onEnter
 {

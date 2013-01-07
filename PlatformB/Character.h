@@ -36,5 +36,6 @@
 
 -(CGRect)collisionBoundingBox;
 
+-(id) initWithSpriteList:(NSString *) plistFilename pngFilename:(NSString *) pngFilename spriteNames:(NSString *) spriteName;
 
 @end

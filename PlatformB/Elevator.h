@@ -23,4 +23,14 @@ enum {
 @property (nonatomic, assign) int type;
 @property (nonatomic, assign) BOOL initYRandom;
 
+@property (nonatomic, assign) CGPoint velocity;
+@property (nonatomic, assign) BOOL onGround;
+@property (nonatomic, assign) CGPoint desiredPosition;
+@property (nonatomic, assign) CGPoint position;
+
+
+-(void)update:(ccTime)dt;
+-(CGRect) collisionBoundingBox;
+
+
 @end

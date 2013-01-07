@@ -14,13 +14,16 @@
 #import "MovingSprite.h"
 #import "Elevator.h"
 
+#import "Inventory.h"
+#import "Item.h"
+
 #pragma mark - IntroLayer
 
 @interface IntroLayer()
 @property (nonatomic, retain) NSMutableArray *elevators;
 @property (nonatomic, retain) NSMutableArray *elevatorList;
 @property (nonatomic, retain) NSMutableArray *movableBlocks;
-
+@property (nonatomic, strong) Inventory *inventory;
 @end
 
 @implementation IntroLayer{
@@ -49,7 +52,6 @@
             for( int y=0; y< s.height; y++ ) {
                 unsigned int tgid = [layer tileGIDAt:ccp(x,y)];
                 if (tgid){
-                    //NSLog(@"tgid %d", tgid);
                      
                     Elevator *elevatorSprite = [[Elevator alloc] init];
                     
@@ -59,7 +61,11 @@
 
                     elevatorSprite.initPosition = ccp((x)*self.bgTile.tileMap.tileSize.width,   (self.bgTile.tileMap.mapSize.height-y-1)*self.bgTile.tileMap.tileSize.height);
                     
-                    [tiles addObject:elevatorSprite];
+                    
+                    if (![tiles containsObject:elevatorSprite]) {
+
+                        [tiles addObject:elevatorSprite];
+                    }
                     
                     [layer removeTileAt:ccp(x,y)];
                     
@@ -101,7 +107,7 @@
 	return scene;
 }
 
- 
+#pragma mark Touch Detection
  
 - (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *t in touches) {
@@ -182,8 +188,9 @@
     }
 }
 
+#pragma mark Tiles
+
 -(NSArray *)getSurroundingTilesAtPosition:(CGPoint)position forLayer:(CCTMXLayer *)layer {
-    
     CGPoint plPos = [self tileCoordForPosition:position]; //1
     
     NSMutableArray *gids = [NSMutableArray array]; //2
@@ -221,6 +228,7 @@
     return (NSArray *)gids;
 }
 
+#pragma mark Collisions
 
 
 -(void)checkForAndResolveCollisions:(Enemy *)p {
@@ -289,7 +297,15 @@
         CGRect pRect = [p collisionBoundingBox];
         
         if ([[dic objectForKey:@"gid"] intValue] && CGRectIntersectsRect(pRect, tileRect)) {
+            
             NSLog(@"Got Fruit");
+            
+            Item *fruit = [Item spriteWithFile:@"fruit.png"];
+            
+            
+            fruit.name = @"Apple";
+            [self.inventory addItem:fruit];
+            
             [self.bgTile.fruits removeTileAt:[[dic objectForKey:@"tilePos"] CGPointValue]];
         }
         
@@ -312,13 +328,81 @@
     }
 }
 
--(void) checkForMovableObjectCollisions:(NSMutableArray *) object{
+-(void) checkForMovableObjectCollisions:(NSMutableArray *) objects{
+    
+    
+    for (Elevator *elevator in objects) {
+        
+        CCSprite *sprite = (CCSprite *)[self.bgTile getChildByTag:elevator.gId];
+        elevator.position = sprite.position;
+        elevator.sprite = sprite;
+        
+        CGPoint spritePos = elevator.desiredPosition;
+        spritePos.y -= [sprite boundingBox].size.height;
+        
+     
+        NSArray *tiles = [self getSurroundingTilesAtPosition:spritePos forLayer:self.bgTile.walls];
+        
+        
+        //NSLog(@"count tiles %d", [tiles count]);
+        
+        CGRect pRect = CGRectMake(sprite.position.x, sprite.position.y, [sprite boundingBox].size.width, [sprite boundingBox].size.height);
+        
+        
+        for (NSDictionary *dic in tiles) {
+            
+            int gid = [[dic objectForKey:@"gid"] intValue]; 
+            
+            if (gid) {
+                CGRect tileRect = CGRectMake([[dic objectForKey:@"x"] floatValue], [[dic objectForKey:@"y"] floatValue], self.bgTile.tileMap.tileSize.width, self.bgTile.tileMap.tileSize.height);
+                
+                //NSLog(@"bbox sprite %f %f - %f %f",pRect.origin.x,pRect.origin.y, tileRect.origin.x, tileRect.origin.y);
+
+                
+                if (CGRectIntersectsRect(pRect, tileRect)) {
+                    
+
+                    
+                    CGRect intersection = CGRectIntersection(pRect, tileRect);
+                    int tileIndx = [tiles indexOfObject:dic];
+                    //NSLog(@"inter bellow %d", tileIndx);
+
+                    if (pRect.origin.y > tileRect.origin.y) {
+                        //tile is directly below player
+                       // NSLog(@"inter bellow %d", tileIndx);
+
+                        elevator.desiredPosition = ccp(elevator.desiredPosition.x, elevator.desiredPosition.y + 1);
+                        
+                        elevator.onGround = YES;
+                    } 
+                    else if (tileIndx == 2) {
+                        //tile is left of player
+                        elevator.desiredPosition = ccp(elevator.desiredPosition.x + intersection.size.width, elevator.desiredPosition.y);
+                    } else if (tileIndx == 3) {
+                        //tile is right of player
+                        elevator.desiredPosition = ccp(elevator.desiredPosition.x - intersection.size.width, elevator.desiredPosition.y);
+                    }
+                    
+                    
+                }
+            }
+
+        }
+        
+        sprite.position = elevator.desiredPosition;
+
+
+    }
     
 }
 
 -(void) checkForCollisionsWithMovableObjects:(NSMutableArray *) objects withCharacter:(Character *)character{
+  
+    
     for (Elevator *elevator in objects) {
         CCSprite *sprite = (CCSprite *)[self.bgTile getChildByTag:elevator.gId];
+       
+
         if ( CGRectIntersectsRect([sprite boundingBox], [character collisionBoundingBox])) {
             CGRect intersection = CGRectIntersection([sprite boundingBox], [character collisionBoundingBox]);
             
@@ -352,7 +436,7 @@
             }
             
             if (elevator.type == isMovable){
-                sprite.position = spritePosition;
+                elevator.desiredPosition = spritePosition;
             }
             
         }
@@ -364,10 +448,7 @@
 
 
 -(void)checkForAndResolveCollisions2:(Character *)p {
-    
-    
     NSArray *tiles = [self getSurroundingTilesAtPosition:p.bear.position forLayer:self.bgTile.walls]; 
-     
      
     p.onGround = NO;
     
@@ -414,8 +495,14 @@
     
     p.bear.position =   p.desiredPosition ;
 }
- 
- 
+
+#pragma mark Schedulers
+
+-(void) updateElevators:(NSMutableArray *) elevators inTime:(ccTime) dt{
+    for (Elevator *elevator in elevators){
+        [elevator update:dt];
+    }
+}
 
 -(void) moving:(ccTime)dt{
     
@@ -426,21 +513,27 @@
 
     [self moveElevators:self.elevatorList];
     
+   // [self updateElevators:self.movableBlocks inTime:dt];
+    
     self.dude.bear.position = self.dude.desiredPosition;
     
+    //Character with tiles
     [self checkForAndResolveCollisions2:self.dude];
     
-    
-    //[self checkForCollisionsWithMovingObjects:self.dude];
-    
+    //character with Elevators
     [self checkForCollisionsWithMovableObjects:self.elevatorList withCharacter:self.dude];
     
+    //character with Blocks
+   
     [self checkForCollisionsWithMovableObjects:self.movableBlocks withCharacter:self.dude];
 
-    [self checkForMovableObjectCollisions:self.movableBlocks];
+    //Blocks with tiles
+ //   [self checkForMovableObjectCollisions:self.movableBlocks];
+    
     
     [self checkForHazards:self.dude];
     [self checkForFruits:self.dude];
+    
     
     
     //[self setViewpointCenter: self.dude.bear.position];
@@ -467,6 +560,7 @@
 
 -(void) moveElevators:(NSMutableArray *)elevators{
     for (Elevator *elevator in elevators) {
+        
         CCSprite *sprite = (CCSprite *)[self.bgTile getChildByTag:elevator.gId];
         CGPoint spritePosition = sprite.position;
         
@@ -490,6 +584,9 @@
     }
 }
 
+#pragma mark Initializer
+
+
 -(void) addElevatorFromFilename:(NSString *)spriteName  fromTiles:(NSMutableArray *)tiles inLayer:(CCLayer *)layer{
     for (Elevator *elevator in tiles) {
         
@@ -508,6 +605,7 @@
     }
 }
 
+
 -(void) initElevators{
    
     self.elevatorList = [self loadElevatorList:self.bgTile.elevators type:isElevator];
@@ -521,6 +619,8 @@
   
 }
 
+#pragma mark Enter 
+
 -(void) onEnter
 {
 	[super onEnter];
@@ -529,14 +629,21 @@
     self.bgTile.position = ccp(0, 0);
     [self addChild:self.bgTile];
     
-    self.dude = [Character node];
+    self.dude = [[Character alloc] initWithSpriteList:@"walker.plist" pngFilename:@"walker.png" spriteNames:@"LRUN_000"];
     [self.bgTile addChild:self.dude z:15];
     
     self.enemy = [[Enemy alloc] initWithFile:@"red.png"];
+    
     [self.bgTile addChild:self.enemy];
     self.enemy.anchorPoint = ccp(0,0);
     self.enemy.position = ccp(140,550);
     self.enemy.walkLeft = YES;
+    
+    self.inventory  = [[Inventory alloc] init];
+    self.inventory.position = ccp(1000, 15);
+    [self addChild:self.inventory];
+    
+    
     
     [self initElevators];
      
