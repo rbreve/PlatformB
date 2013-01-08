@@ -23,6 +23,7 @@
 @property (nonatomic, retain) NSMutableArray *elevators;
 @property (nonatomic, retain) NSMutableArray *elevatorList;
 @property (nonatomic, retain) NSMutableArray *movableBlocks;
+@property (nonatomic, retain) NSMutableArray *items;
 @property (nonatomic, strong) Inventory *inventory;
 @end
 
@@ -282,7 +283,7 @@
 
 -(void) characterDie:(int) dieCause{
     [self.dude.bear runAction:[CCFadeOut actionWithDuration:0.3]];
-    self.dude.bear.position = ccp(100,500);
+    self.dude.bear.position = ccp(100,620);
     [self.dude.bear runAction:[CCFadeIn actionWithDuration:0.5]];
 
 }
@@ -300,7 +301,7 @@
             
             NSLog(@"Got Fruit");
             
-            Item *fruit = [Item spriteWithFile:@"fruit.png"];
+            Item *fruit = [Item spriteWithFile:@"I_C_Apple.png"];
             
             
             fruit.name = @"Apple";
@@ -411,7 +412,7 @@
             CGPoint charPosition = character.desiredPosition;
             CGPoint spritePosition = sprite.position;
             
-            //bellow
+            //below
             if ((character.desiredPosition.y >= sprite.position.y + [sprite boundingBox].size.height)&&(character.onGround)) {
                 
                 charPosition.y = character.desiredPosition.y + intersection.size.height;
@@ -422,10 +423,6 @@
                 character.bear.position = character.desiredPosition;
             }
             
-            //TODO con bounding box
-            
-           // NSLog(@"char position %f %f h:%f, sprite position %f %f", charPosition.x,charPosition.y,[character.bear boundingBox].size.height,  spritePosition.x, spritePosition.y);
-            
             float charHeightOffset = [character.bear boundingBox].size.height / 2;
             
             //right side
@@ -433,6 +430,14 @@
                 spritePosition.x -= intersection.size.width;
             }else if ((charPosition.x < spritePosition.x)&&(spritePosition.y+charHeightOffset == charPosition.y)) {
                 spritePosition.x += intersection.size.width;
+            }
+            
+            if (elevator.type == itemGoldenKey) {
+                //enlazar type con filename mejor
+                Item *item = [[Item alloc] initWithFile:@"key.png"];
+                item.itemType = itemGoldenKey;
+                [self.inventory addItem:item];
+                [self.bgTile removeChild:sprite cleanup:YES];
             }
             
             if (elevator.type == isMovable){
@@ -477,7 +482,6 @@
                     p.onGround = YES;
                 } else if (tileIndx == 1) {
                     //tile is directly above player
-                    NSLog(@"Above");
                     p.desiredPosition = ccp(p.desiredPosition.x, p.bear.position.y - intersection.size.height);
                     p.velocity = ccp(p.velocity.x, -100);
                 } else if (tileIndx == 2) {
@@ -525,7 +529,7 @@
     
     //character with Blocks
    
-    [self checkForCollisionsWithMovableObjects:self.movableBlocks withCharacter:self.dude];
+    [self checkForCollisionsWithMovableObjects:self.items withCharacter:self.dude];
 
     //Blocks with tiles
  //   [self checkForMovableObjectCollisions:self.movableBlocks];
@@ -594,12 +598,11 @@
         
         sprite.tag = elevator.gId;
         [layer addChild:sprite];
+   
         sprite.anchorPoint = ccp(0, 0);
         
         CGPoint initPosition = elevator.initPosition;
-        //randomize y position
-        //initPosition.y = initPosition.y-arc4random()%150;
-        
+         
         sprite.position = initPosition;
         
     }
@@ -615,7 +618,9 @@
     self.movableBlocks = [self loadElevatorList:self.bgTile.pushable type:isMovable];
     [self addElevatorFromFilename:@"pushable.png" fromTiles:self.movableBlocks inLayer:self.bgTile];
     
-    
+    self.items = [self loadElevatorList:self.bgTile.keys type:itemGoldenKey];
+    [self addElevatorFromFilename:@"key.png" fromTiles:self.items inLayer:self.bgTile];
+
   
 }
 
@@ -630,6 +635,7 @@
     [self addChild:self.bgTile];
     
     self.dude = [[Character alloc] initWithSpriteList:@"walker.plist" pngFilename:@"walker.png" spriteNames:@"LRUN_000"];
+    self.dude.bear.position = ccp(100,620);
     [self.bgTile addChild:self.dude z:15];
     
     self.enemy = [[Enemy alloc] initWithFile:@"red.png"];

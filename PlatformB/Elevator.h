@@ -12,6 +12,8 @@
 @interface Elevator : NSObject
 
 enum {
+    itemGoldenKey = 4,
+    isObject = 3,
     isElevator = 2,
 	isMovable = 1,
 };

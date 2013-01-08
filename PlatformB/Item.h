@@ -14,5 +14,6 @@
 }
 
 @property (nonatomic, strong) NSString *name;
+@property (nonatomic, assign) int itemType;
 
 @end

@@ -22,7 +22,7 @@
 -(void) addItem:(Item *) item{
     [self.items addObject:item];
     [self addChild:item];
-    item.position = ccp(0, [self.items count] * 50);
+    item.position = ccp(0, 500 - [self.items count] * 45);
 }
 
 -(id) init{

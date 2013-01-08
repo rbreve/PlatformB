@@ -111,7 +111,7 @@
         // Create a sprite for our bear
         self.bear = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"%@00.png", spriteName]];
         self.bear.scale = 0.5;
-        _bear.position = ccp(200, 310);
+        
         
         
         //self.walkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]];
