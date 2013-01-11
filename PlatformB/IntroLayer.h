@@ -25,3 +25,5 @@
 @property (nonatomic, retain) TileMap *bgTile;
 @property (nonatomic, retain) Enemy *enemy;
 @end
+
+

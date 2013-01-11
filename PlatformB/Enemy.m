@@ -35,11 +35,11 @@
     CGPoint gravity = ccp(0.0, -450.0);
     CGPoint gravityStep = ccpMult(gravity, dt);
     
-    CGPoint forwardMove = ccp(400.0, 0.0);
+    CGPoint forwardMove = ccp(300.0, 0.0);
     CGPoint forwardStep = ccpMult(forwardMove, dt); //1
     
     
-    CGPoint backwardMove = ccp(-400.0, 0.0);
+    CGPoint backwardMove = ccp(-300.0, 0.0);
     CGPoint backwardStep = ccpMult(backwardMove, dt); //1
     
     self.velocity = ccp(self.velocity.x * 0.90, self.velocity.y); //2
@@ -66,10 +66,7 @@
     
     self.desiredPosition = ccpAdd(self.position, stepVelocity);
     
-    if (self.desiredPosition.y < 10) {
-        self.desiredPosition = ccp(self.desiredPosition.x, 10);
-        self.onGround = YES;
-    }
+    
     
 }
 

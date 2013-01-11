@@ -17,14 +17,22 @@
 #import "Inventory.h"
 #import "Item.h"
 
+#define FILENAME_KEY @"coin.png"
+#define FILENAME_FRUIT @"fruit.png"
+
 #pragma mark - IntroLayer
 
 @interface IntroLayer()
 @property (nonatomic, retain) NSMutableArray *elevators;
 @property (nonatomic, retain) NSMutableArray *elevatorList;
 @property (nonatomic, retain) NSMutableArray *movableBlocks;
+
 @property (nonatomic, retain) NSMutableArray *items;
+
 @property (nonatomic, strong) Inventory *inventory;
+
+ 
+
 @end
 
 @implementation IntroLayer{
@@ -298,9 +306,7 @@
         CGRect pRect = [p collisionBoundingBox];
         
         if ([[dic objectForKey:@"gid"] intValue] && CGRectIntersectsRect(pRect, tileRect)) {
-            
-            NSLog(@"Got Fruit");
-            
+             
             Item *fruit = [Item spriteWithFile:@"I_C_Apple.png"];
             
             
@@ -454,8 +460,10 @@
 
 -(void)checkForAndResolveCollisions2:(Character *)p {
     NSArray *tiles = [self getSurroundingTilesAtPosition:p.bear.position forLayer:self.bgTile.walls]; 
-     
+    
     p.onGround = NO;
+    p.onLeftWall = NO;
+    p.onRightWall = NO;
     
     for (NSDictionary *dic in tiles) {
         CGRect pRect = [p collisionBoundingBox]; //3
@@ -487,9 +495,11 @@
                 } else if (tileIndx == 2) {
                     //tile is left of player
                     p.desiredPosition = ccp(p.desiredPosition.x + intersection.size.width, p.desiredPosition.y);
+                    //p.onLeftWall = YES;
                 } else if (tileIndx == 3) {
                     //tile is right of player
                     p.desiredPosition = ccp(p.desiredPosition.x - intersection.size.width, p.desiredPosition.y);
+                    //p.onRightWall = YES;
                 }
                 
                
@@ -512,8 +522,8 @@
     
     [self.dude update:dt];
     
-    //[self.enemy update:dt];
-    //[self checkForAndResolveCollisions:self.enemy];
+    [self.enemy update:dt];
+    [self checkForAndResolveCollisions:self.enemy];
 
     [self moveElevators:self.elevatorList];
     
@@ -614,7 +624,6 @@
     self.elevatorList = [self loadElevatorList:self.bgTile.elevators type:isElevator];
     [self addElevatorFromFilename:@"elevator.png" fromTiles:self.elevatorList inLayer:self.bgTile];
     
-
     self.movableBlocks = [self loadElevatorList:self.bgTile.pushable type:isMovable];
     [self addElevatorFromFilename:@"pushable.png" fromTiles:self.movableBlocks inLayer:self.bgTile];
     
@@ -624,36 +633,51 @@
   
 }
 
+
+
 #pragma mark Enter 
 
 -(void) onEnter
 {
 	[super onEnter];
     
+    //TODO hacer tilemap init with filename
+    //CGSize size = [[CCDirector sharedDirector] winSize];
+    
+    CCSprite *sky = [CCSprite spriteWithFile:@"sky.png"];
+    sky.position = ccp(200,520);
+    [self addChild:sky];
+    
+    
     self.bgTile = [TileMap node];
     self.bgTile.position = ccp(0, 0);
     [self addChild:self.bgTile];
+     
+    self.dude = [[Character alloc] initWithSpriteList:@"walkgirl.plist" pngFilename:@"walkgirl.png" spriteNames:@"w" frameNumber:3];
+    self.dude.bear.position = [self.bgTile getSpawnPointfromObjectNamed:@"PlayerSpawn"];
     
-    self.dude = [[Character alloc] initWithSpriteList:@"walker.plist" pngFilename:@"walker.png" spriteNames:@"LRUN_000"];
-    self.dude.bear.position = ccp(100,620);
     [self.bgTile addChild:self.dude z:15];
     
     self.enemy = [[Enemy alloc] initWithFile:@"red.png"];
+    self.enemy.position = [self.bgTile getSpawnPointfromObjectNamed:@"EnemySpawn"];
+    self.enemy.walkRight = YES;
+    
     
     [self.bgTile addChild:self.enemy];
-    self.enemy.anchorPoint = ccp(0,0);
-    self.enemy.position = ccp(140,550);
-    self.enemy.walkLeft = YES;
+
     
     self.inventory  = [[Inventory alloc] init];
     self.inventory.position = ccp(1000, 15);
     [self addChild:self.inventory];
     
-    
-    
+  
+     
     [self initElevators];
      
 }
+
+
+
 
 
 @end

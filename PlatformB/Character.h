@@ -24,6 +24,8 @@
 @property (nonatomic, assign) BOOL walkLeft;
 @property (nonatomic, assign) BOOL walkRight;
 @property (nonatomic, assign) BOOL onGround;
+@property (nonatomic, assign) BOOL onLeftWall;
+@property (nonatomic, assign) BOOL onRightWall;
 
 @property (nonatomic, assign) BOOL mightAsWellJump;
 
@@ -36,6 +38,6 @@
 
 -(CGRect)collisionBoundingBox;
 
--(id) initWithSpriteList:(NSString *) plistFilename pngFilename:(NSString *) pngFilename spriteNames:(NSString *) spriteName;
+-(id) initWithSpriteList:(NSString *) plistFilename pngFilename:(NSString *) pngFilename spriteNames:(NSString *) spriteName frameNumber:(int) frameNumber;
 
 @end

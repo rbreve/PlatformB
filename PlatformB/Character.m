@@ -32,13 +32,17 @@
 -(void)update:(ccTime)dt{
     CGPoint jumpForce = ccp(0.0, 450.0);
     float jumpCutoff = 150.0;
+    
     if (self.mightAsWellJump && self.onGround) {
         self.velocity = ccpAdd(self.velocity, jumpForce);
         //[[SimpleAudioEngine sharedEngine] playEffect:@"jump.wav"];
     } else if (!self.mightAsWellJump && self.velocity.y > jumpCutoff) {
         self.velocity = ccp(self.velocity.x, jumpCutoff);
     }
- 
+    
+   
+    
+      
     
     CGPoint gravity = ccp(0.0, -450.0);
     CGPoint gravityStep = ccpMult(gravity, dt);
@@ -69,9 +73,35 @@
 
         }
     }
-     
-    CGPoint minMovement = ccp(-120.0, -450.0);
-    CGPoint maxMovement = ccp(120.0, 250.0);
+    
+    
+ 
+    BOOL jumpingFromWall;
+    
+    if (self.mightAsWellJump && self.onLeftWall && !self.onGround) {
+        CGPoint jumpForce = ccp(600.0, 450.0);
+        self.velocity = ccpAdd(self.velocity, jumpForce);
+        jumpingFromWall = YES;
+    }
+    else
+    if (self.mightAsWellJump && self.onRightWall && !self.onGround) {
+        CGPoint jumpForce = ccp(-600.0, 450.0);
+        self.velocity = ccpAdd(self.velocity, jumpForce);
+        jumpingFromWall = YES;
+
+    }
+    
+    CGPoint minMovement;
+    CGPoint maxMovement;
+    
+    if (jumpingFromWall) {
+        minMovement = ccp(-320.0, -450.0);
+        maxMovement = ccp(320.0, 250.0);
+    }else{
+        minMovement = ccp(-320.0, -450.0);
+        maxMovement = ccp(320.0, 250.0);
+    }
+   
     
     self.velocity = ccpClamp(self.velocity, minMovement, maxMovement); //4
     self.velocity = ccpAdd(self.velocity, gravityStep);
@@ -85,7 +115,7 @@
     
 }
   
--(id) initWithSpriteList:(NSString *) plistFilename pngFilename:(NSString *) pngFilename spriteNames:(NSString *) spriteName{
+-(id) initWithSpriteList:(NSString *) plistFilename pngFilename:(NSString *) pngFilename spriteNames:(NSString *) spriteName frameNumber:(int) frameNumber{
     if( (self=[super init]) ) {
         
         self.velocity = ccp(0.0, 0.0);
@@ -98,20 +128,19 @@
         
         // Load up the frames of our animation
         NSMutableArray *walkAnimFrames = [NSMutableArray array];
-        NSString* z=@"";
         
-        for(int i = 0; i <= 5; ++i) {
-            z= i < 10 ? @"0" : @"";
+        
+        for(int i = 0; i <= frameNumber; ++i) {
+       
             
-            [walkAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"%@%@%d.png",spriteName,z, i]]];
+            [walkAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"%@%d.png",spriteName, i]]];
         }
         
         CCAnimation *walkAnim =  [CCAnimation animationWithFrames:walkAnimFrames delay:0.04f];
         
         // Create a sprite for our bear
-        self.bear = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"%@00.png", spriteName]];
-        self.bear.scale = 0.5;
-        
+        self.bear = [CCSprite spriteWithSpriteFrameName:[NSString stringWithFormat:@"%@0.png", spriteName]];
+         
         
         
         //self.walkAction = [CCRepeatForever actionWithAction:[CCAnimate actionWithAnimation:walkAnim restoreOriginalFrame:NO]];

@@ -25,4 +25,8 @@
 
 @property (nonatomic, retain) NSMutableArray *elevatorList;
 
+
+-(CGPoint) getSpawnPointfromObjectNamed:(NSString *) objectName;
+
+-(NSMutableArray *) getCoins;
 @end
