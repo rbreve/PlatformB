@@ -17,17 +17,21 @@
 #import "Inventory.h"
 #import "Item.h"
 
-#define FILENAME_KEY @"coin.png"
+#define FILENAME_KEY @"key.png"
 #define FILENAME_FRUIT @"fruit.png"
+#define FILENAME_COIN @"coin.png"
 
 #pragma mark - IntroLayer
 
 @interface IntroLayer()
 @property (nonatomic, retain) NSMutableArray *elevators;
+@property (nonatomic, retain) NSMutableArray *coins;
+
 @property (nonatomic, retain) NSMutableArray *elevatorList;
 @property (nonatomic, retain) NSMutableArray *movableBlocks;
 
 @property (nonatomic, retain) NSMutableArray *items;
+
 
 @property (nonatomic, strong) Inventory *inventory;
 
@@ -52,7 +56,7 @@
 }
 
 
--(NSMutableArray *)loadElevatorList:(CCTMXLayer *) layer type:(int) type {
+-(NSMutableArray *)loadTilesFromLayer:(CCTMXLayer *) layer type:(int) type {
      
         
         NSMutableArray *tiles = [[NSMutableArray alloc] init];
@@ -279,7 +283,30 @@
                     p.walkLeft = YES;
                     p.walkRight = NO;
                 }else{
-                    NSLog(@"LOL DIAGONAL");
+                    if (intersection.size.width > intersection.size.height) {
+                        //tile is diagonal, but resolving collision vertially
+                        p.velocity = ccp(p.velocity.x, 0.0);
+                        float resolutionHeight;
+                        if (tileIndx > 5) {
+                            resolutionHeight = -intersection.size.height;
+                            p.onGround = YES;
+                        } else {
+                            resolutionHeight = intersection.size.height;
+                        }
+                        
+                        p.desiredPosition = ccp(p.desiredPosition.x, p.desiredPosition.y + resolutionHeight );
+                        
+                    } else {
+                        float resolutionWidth;
+                        if (tileIndx == 6 || tileIndx == 4) {
+                            resolutionWidth = intersection.size.width;
+                        } else {
+                            resolutionWidth = -intersection.size.width;
+                        }
+                        p.desiredPosition = ccp(p.desiredPosition.x + resolutionWidth , p.desiredPosition.y);
+                        
+                    }
+
                 }
         
             }
@@ -297,6 +324,29 @@
 }
 
 
+-(void) checkForItems:(Character *)p inLayer:(CCTMXLayer *) layer spriteFilename:(NSString *) spriteFilename{
+    NSArray *tiles = [self getSurroundingTilesAtPosition:p.bear.position forLayer:layer];
+    for (NSDictionary *dic in tiles) {
+        
+        CGRect tileRect = CGRectMake([[dic objectForKey:@"x"] floatValue], [[dic objectForKey:@"y"] floatValue], self.bgTile.tileMap.tileSize.width, self.bgTile.tileMap.tileSize.height);
+        
+        CGRect pRect = [p collisionBoundingBox];
+        
+        if ([[dic objectForKey:@"gid"] intValue] && CGRectIntersectsRect(pRect, tileRect)) {
+            
+            Item *item = [Item spriteWithFile:spriteFilename];
+            
+            
+            item.name = @"Apple";
+            [self.inventory addItem:item];
+            
+            [layer removeTileAt:[[dic objectForKey:@"tilePos"] CGPointValue]];
+        }
+        
+    }
+}
+
+//should remove this
 -(void) checkForFruits:(Character *)p{
     NSArray *tiles = [self getSurroundingTilesAtPosition:p.bear.position forLayer:self.bgTile.fruits];
     for (NSDictionary *dic in tiles) {
@@ -446,6 +496,14 @@
                 [self.bgTile removeChild:sprite cleanup:YES];
             }
             
+            if (elevator.type == itemCoin) {
+                //enlazar type con filename mejor
+                Item *item = [[Item alloc] initWithFile:@"coin.png"];
+                item.itemType = itemCoin;
+                [self.inventory addItem:item];
+                [self.bgTile removeChild:sprite cleanup:YES];
+            }
+            
             if (elevator.type == isMovable){
                 elevator.desiredPosition = spritePosition;
             }
@@ -492,11 +550,11 @@
                     //tile is directly above player
                     p.desiredPosition = ccp(p.desiredPosition.x, p.bear.position.y - intersection.size.height);
                     p.velocity = ccp(p.velocity.x, -100);
-                } else if (tileIndx == 2) {
+                } else if (tileIndx == 2 || tileIndx == 4 || tileIndx == 6) {
                     //tile is left of player
                     p.desiredPosition = ccp(p.desiredPosition.x + intersection.size.width, p.desiredPosition.y);
                     //p.onLeftWall = YES;
-                } else if (tileIndx == 3) {
+                } else if (tileIndx == 3 || tileIndx==5 || tileIndx == 7)   {
                     //tile is right of player
                     p.desiredPosition = ccp(p.desiredPosition.x - intersection.size.width, p.desiredPosition.y);
                     //p.onRightWall = YES;
@@ -540,17 +598,21 @@
     //character with Blocks
    
     [self checkForCollisionsWithMovableObjects:self.items withCharacter:self.dude];
+    [self checkForCollisionsWithMovableObjects:self.coins withCharacter:self.dude];
+
 
     //Blocks with tiles
  //   [self checkForMovableObjectCollisions:self.movableBlocks];
     
     
     [self checkForHazards:self.dude];
-    [self checkForFruits:self.dude];
     
+     
+   // [self checkForItems:self.dude inLayer:self.bgTile.coins spriteFilename:@"coin.png"];
+   // [self checkForItems:self.dude inLayer:self.bgTile.fruits spriteFilename:@"fruit.png"];
+
     
-    
-    //[self setViewpointCenter: self.dude.bear.position];
+   //[self setViewpointCenter: self.dude.bear.position];
 }
 
 -(void)setViewpointCenter:(CGPoint) position {
@@ -621,16 +683,20 @@
 
 -(void) initElevators{
    
-    self.elevatorList = [self loadElevatorList:self.bgTile.elevators type:isElevator];
+    self.elevatorList = [self loadTilesFromLayer:self.bgTile.elevators type:isElevator];
     [self addElevatorFromFilename:@"elevator.png" fromTiles:self.elevatorList inLayer:self.bgTile];
     
-    self.movableBlocks = [self loadElevatorList:self.bgTile.pushable type:isMovable];
+    self.movableBlocks = [self loadTilesFromLayer:self.bgTile.pushable type:isMovable];
     [self addElevatorFromFilename:@"pushable.png" fromTiles:self.movableBlocks inLayer:self.bgTile];
     
-    self.items = [self loadElevatorList:self.bgTile.keys type:itemGoldenKey];
-    [self addElevatorFromFilename:@"key.png" fromTiles:self.items inLayer:self.bgTile];
+    self.items = [self loadTilesFromLayer:self.bgTile.keys type:itemGoldenKey];
+    [self addElevatorFromFilename:FILENAME_KEY fromTiles:self.items inLayer:self.bgTile];
+    
+    self.coins =  [self loadTilesFromLayer:self.bgTile.coins type:itemCoin];
+    [self addElevatorFromFilename:FILENAME_COIN fromTiles:self.coins inLayer:self.bgTile];
+    
 
-  
+    
 }
 
 
@@ -645,14 +711,15 @@
     //CGSize size = [[CCDirector sharedDirector] winSize];
     
     CCSprite *sky = [CCSprite spriteWithFile:@"sky.png"];
-    sky.position = ccp(200,520);
+    sky.position = ccp(200,470);
     [self addChild:sky];
     
     
     self.bgTile = [TileMap node];
-    self.bgTile.position = ccp(0, 0);
+
     [self addChild:self.bgTile];
-     
+    self.bgTile.position = ccp(0, -200);
+    
     self.dude = [[Character alloc] initWithSpriteList:@"walkgirl.plist" pngFilename:@"walkgirl.png" spriteNames:@"w" frameNumber:3];
     self.dude.bear.position = [self.bgTile getSpawnPointfromObjectNamed:@"PlayerSpawn"];
     

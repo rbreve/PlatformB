@@ -150,8 +150,8 @@
 		2E2FC0F0169E81EF00C05546 /* sky.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E2FC0EF169E81EF00C05546 /* sky.png */; };
 		2E2FC0F4169E874700C05546 /* coin.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E2FC0F3169E874700C05546 /* coin.png */; };
 		2E3D3F2C169902BE00820985 /* pushable.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E3D3F2B169902BE00820985 /* pushable.png */; };
-		2EB6664316961DDE001B3444 /* walker.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2EB6664116961DDE001B3444 /* walker.plist */; };
-		2EB6664416961DDE001B3444 /* walker.png in Resources */ = {isa = PBXBuildFile; fileRef = 2EB6664216961DDE001B3444 /* walker.png */; };
+		2EBC364916A256E6004041C4 /* walkgirl-hd.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2EBC364716A256E6004041C4 /* walkgirl-hd.plist */; };
+		2EBC364A16A256E6004041C4 /* walkgirl-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = 2EBC364816A256E6004041C4 /* walkgirl-hd.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -426,8 +426,8 @@
 		2E2FC0EF169E81EF00C05546 /* sky.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sky.png; sourceTree = "<group>"; };
 		2E2FC0F3169E874700C05546 /* coin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = coin.png; path = Resources/coin.png; sourceTree = "<group>"; };
 		2E3D3F2B169902BE00820985 /* pushable.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pushable.png; path = Resources/pushable.png; sourceTree = "<group>"; };
-		2EB6664116961DDE001B3444 /* walker.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = walker.plist; sourceTree = "<group>"; };
-		2EB6664216961DDE001B3444 /* walker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = walker.png; sourceTree = "<group>"; };
+		2EBC364716A256E6004041C4 /* walkgirl-hd.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "walkgirl-hd.plist"; sourceTree = "<group>"; };
+		2EBC364816A256E6004041C4 /* walkgirl-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "walkgirl-hd.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -878,8 +878,8 @@
 		2E2FC0F2169E83C100C05546 /* animations */ = {
 			isa = PBXGroup;
 			children = (
-				2EB6664116961DDE001B3444 /* walker.plist */,
-				2EB6664216961DDE001B3444 /* walker.png */,
+				2EBC364716A256E6004041C4 /* walkgirl-hd.plist */,
+				2EBC364816A256E6004041C4 /* walkgirl-hd.png */,
 				2E25274916935C3D0006F7BA /* leftrun_default.plist */,
 				2E25274A16935C3D0006F7BA /* leftrun.plist */,
 				2E2FC0E7169E7A9500C05546 /* walkgirl.plist */,
@@ -955,8 +955,6 @@
 				2E252752169368600006F7BA /* Default-Landscape@2x~ipad.png in Resources */,
 				2E2527571693A5910006F7BA /* red.png in Resources */,
 				2E2527591693DC100006F7BA /* elevator.png in Resources */,
-				2EB6664316961DDE001B3444 /* walker.plist in Resources */,
-				2EB6664416961DDE001B3444 /* walker.png in Resources */,
 				2E3D3F2C169902BE00820985 /* pushable.png in Resources */,
 				2E2FC0A8169AA0E300C05546 /* fruit.png in Resources */,
 				2E2FC0AE169BC6AA00C05546 /* I_C_Apple.png in Resources */,
@@ -969,6 +967,8 @@
 				2E2FC0EE169E7C0800C05546 /* maptile2.png in Resources */,
 				2E2FC0F0169E81EF00C05546 /* sky.png in Resources */,
 				2E2FC0F4169E874700C05546 /* coin.png in Resources */,
+				2EBC364916A256E6004041C4 /* walkgirl-hd.plist in Resources */,
+				2EBC364A16A256E6004041C4 /* walkgirl-hd.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

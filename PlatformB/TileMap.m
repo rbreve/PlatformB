@@ -23,8 +23,11 @@
         self.fruits = [self.tileMap layerNamed:@"fruits"];
         self.pushable = [self.tileMap layerNamed:@"pushable"];
         self.keys = [self.tileMap layerNamed:@"keys"];
+        self.coins = [self.tileMap layerNamed:@"coins"];
+        
 
         [self addChild:self.tileMap z:-1];
+        
             
         
     }

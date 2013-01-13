@@ -16,6 +16,7 @@ enum {
     isObject = 3,
     isElevator = 2,
 	isMovable = 1,
+    itemCoin = 5,
 };
 
 @property (nonatomic, assign) BOOL movingUp;
