@@ -21,6 +21,7 @@
 
 @property (nonatomic, assign) CGPoint desiredPosition;
 @property (nonatomic, assign) CGPoint velocity;
+
 @property (nonatomic, assign) BOOL mightAsWellJump;
 @property (nonatomic, assign) BOOL moving;
 @property (nonatomic, assign) BOOL walkLeft;

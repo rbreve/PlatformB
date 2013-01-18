@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
+@class Item;
 
 @interface Character : CCLayer {
    
@@ -27,9 +28,15 @@
 @property (nonatomic, assign) BOOL onLeftWall;
 @property (nonatomic, assign) BOOL onRightWall;
 
+@property (nonatomic, assign) BOOL movesAlone;
+
 @property (nonatomic, assign) BOOL mightAsWellJump;
 
 @property (nonatomic, assign) CGPoint desiredPosition;
+
+@property (nonatomic, strong) CCSprite *holdItem;
+
+@property (nonatomic, assign) int walkSpeed;
 
  
 
@@ -39,5 +46,9 @@
 -(CGRect)collisionBoundingBox;
 
 -(id) initWithSpriteList:(NSString *) plistFilename pngFilename:(NSString *) pngFilename spriteNames:(NSString *) spriteName frameNumber:(int) frameNumber;
+-(id) initWithSprite:(NSString *) spriteFilename;
 
+-(void) scaleWhenDies;
+
+-(void) holdsItem:(Item *) item;
 @end

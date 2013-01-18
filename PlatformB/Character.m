@@ -1,9 +1,12 @@
 
 #import "Character.h"
+#import "Item.h"
 
+@interface Character()
+@property (nonatomic, assign) BOOL hasAnimation;
+@end
 
 @implementation Character
-@synthesize bear = _bear, moving = _moving, onGround = _onGround, mightAsWellJump = _mightAsWellJump, walkLeft = _walkLeft, walkRight = _walkRight, desiredPosition = _desiredPosition, velocity = _velocity, walkAction = _walkAction;
  
 +(CCScene *) scene
 {
@@ -21,6 +24,26 @@
     return returnBoundingBox;
 }
 
+
+-(void) holdsItem:(Item *) item{
+    CCSprite *k = [CCSprite spriteWithFile:@"key.png"];
+    [self addChild:k z:1001 tag:13];
+    self.holdItem = k;
+}
+
+-(void) dieFinished{
+    
+}
+
+
+-(void) scaleWhenDies{
+    id scaleDownAction = [CCEaseInOut actionWithAction:[CCScaleTo actionWithDuration:0.1 scaleX:1 scaleY:0.3] rate:1.0];
+    id actionRemoveFromParent = [CCCallFuncN actionWithTarget:self selector:@selector(dieFinished)];
+
+    [self.bear runAction:[CCSequence actions: scaleDownAction, actionRemoveFromParent, nil]];
+
+}
+
 -(void)bearMoveEnded {
     //NSLog(@"move ended");
     [self.bear stopAction:self.walkAction];
@@ -33,25 +56,24 @@
     CGPoint jumpForce = ccp(0.0, 450.0);
     float jumpCutoff = 150.0;
     
+    
     if (self.mightAsWellJump && self.onGround) {
+        
         self.velocity = ccpAdd(self.velocity, jumpForce);
         //[[SimpleAudioEngine sharedEngine] playEffect:@"jump.wav"];
     } else if (!self.mightAsWellJump && self.velocity.y > jumpCutoff) {
         self.velocity = ccp(self.velocity.x, jumpCutoff);
     }
     
-   
-    
-      
     
     CGPoint gravity = ccp(0.0, -450.0);
     CGPoint gravityStep = ccpMult(gravity, dt);
     
-    CGPoint forwardMove = ccp(900.0, 0.0);
+    CGPoint forwardMove = ccp(self.walkSpeed, 0.0);
     CGPoint forwardStep = ccpMult(forwardMove, dt); //1
     
     
-    CGPoint backwardMove = ccp(-900.0, 0.0);
+    CGPoint backwardMove = ccp(-self.walkSpeed, 0.0);
     CGPoint backwardStep = ccpMult(backwardMove, dt); //1
     
     self.velocity = ccp(self.velocity.x * 0.90, self.velocity.y); //2
@@ -60,7 +82,9 @@
         self.velocity = ccpAdd(self.velocity, forwardStep);
         self.bear.flipX = NO;
         if (!self.moving) {
-            [_bear runAction:self.walkAction];
+            if (self.hasAnimation) {
+                [_bear runAction:self.walkAction];
+            }
             self.moving = YES;
         }
     }
@@ -68,7 +92,9 @@
         self.bear.flipX = YES;
         self.velocity = ccpAdd(self.velocity, backwardStep);
         if (!self.moving) {
-            [_bear runAction:self.walkAction];
+            if (self.hasAnimation) {
+                [_bear runAction:self.walkAction];
+            }
             self.moving = YES;
 
         }
@@ -111,12 +137,31 @@
     
     self.desiredPosition = ccpAdd(self.bear.position, stepVelocity);
    
+    if (self.holdItem) {
+        self.holdItem.flipX = !self.walkRight;
+        self.holdItem.position =ccp(self.bear.position.x-self.walkLeft*20+self.walkRight*20, self.bear.position.y);
+    }
  
     
 }
-  
+
+-(id) initWithSprite:(NSString *) spriteFilename{
+    if ((self = [super init])) {
+        self.velocity = ccp(0.0, 0.0);
+
+        self.walkSpeed = 400;
+        
+        self.bear = [CCSprite spriteWithFile:spriteFilename];
+        [self addChild:self.bear z:1200];
+    }
+    return self;
+
+}
+
 -(id) initWithSpriteList:(NSString *) plistFilename pngFilename:(NSString *) pngFilename spriteNames:(NSString *) spriteName frameNumber:(int) frameNumber{
     if( (self=[super init]) ) {
+        self.hasAnimation = YES;
+        self.walkSpeed = 900;
         
         self.velocity = ccp(0.0, 0.0);
         
@@ -131,9 +176,7 @@
         
         
         for(int i = 0; i <= frameNumber; ++i) {
-       
-            
-            [walkAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"%@%d.png",spriteName, i]]];
+             [walkAnimFrames addObject:[[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:[NSString stringWithFormat:@"%@%d.png",spriteName, i]]];
         }
         
         CCAnimation *walkAnim =  [CCAnimation animationWithFrames:walkAnimFrames delay:0.04f];

@@ -45,7 +45,7 @@
         [label setString:[NSString stringWithFormat:@"%d", ocurrences]];
     }else{
         self.slotCount ++;
-        CCLabelTTF *label =   [CCLabelTTF labelWithString:@"1" fontName:@"AmericanTypewriter" fontSize:16];
+        CCLabelTTF *label =   [CCLabelTTF labelWithString:@"1" fontName:@"visitor1.ttf" fontSize:18];
         label.tag = item.itemType;
         [self addChild:item];
         [self addChild:label];

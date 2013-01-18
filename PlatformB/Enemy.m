@@ -11,8 +11,7 @@
 
 @implementation Enemy
 
-@synthesize moving = _moving, onGround = _onGround, mightAsWellJump = _mightAsWellJump, walkLeft = _walkLeft, walkRight = _walkRight, desiredPosition = _desiredPosition, velocity = _velocity, walkAction = _walkAction;
-
+ 
 
 -(id)initWithFile:(NSString *)filename {
     if (self = [super initWithFile:filename]) {

@@ -32,6 +32,7 @@
 
 @property (nonatomic, retain) NSMutableArray *items;
 
+@property (nonatomic, strong) NSMutableArray *enemies;
 
 @property (nonatomic, strong) Inventory *inventory;
 
@@ -244,6 +245,15 @@
 #pragma mark Collisions
 
 
+-(void) checkForEnemiesCollisions:(NSMutableArray *) enemies{
+    
+    for (Character *enemy in enemies){
+        
+        [self checkForAndResolveCollisions2:enemy];
+        
+    }
+}
+
 -(void)checkForAndResolveCollisions:(Enemy *)p {
     
     
@@ -453,6 +463,50 @@
     
 }
 
+
+
+
+
+-(void) scaleWhenDies:(Character *)character{
+    id scaleDownAction = [CCEaseInOut actionWithAction:[CCScaleTo actionWithDuration:0.1 scaleX:1 scaleY:0.3] rate:1.0];
+    id actionRemoveFromParent = [CCCallBlock actionWithBlock:^{
+        [character.bear removeFromParentAndCleanup:YES];
+        [self.enemies removeObject:character];
+        
+    }];
+
+    
+    [character.bear runAction:[CCSequence actions: scaleDownAction, actionRemoveFromParent, nil]];
+    
+}
+
+-(void) checkForCollisionsWithEnemies:(NSMutableArray *) enemies withCharacter:(Character *)character{
+    
+    for (Character *enemy in enemies){
+
+        if (CGRectIntersectsRect([enemy collisionBoundingBox], [character collisionBoundingBox])) {
+             
+            CGPoint charPos = character.bear.position;
+            CGPoint enemyPos = enemy.bear.position;
+   
+            if (charPos.y > enemyPos.y+15) {
+
+                
+                [self scaleWhenDies:enemy];
+                
+                character.mightAsWellJump = YES;
+                
+                
+                
+            }else{
+                if (abs(charPos.x - enemyPos.x) > 10){
+                    NSLog(@"dead");
+                }
+            }
+        }
+    }
+}
+
 -(void) checkForCollisionsWithMovableObjects:(NSMutableArray *) objects withCharacter:(Character *)character{
   
     
@@ -461,32 +515,6 @@
        
 
         if ( CGRectIntersectsRect([sprite boundingBox], [character collisionBoundingBox])) {
-            CGRect intersection = CGRectIntersection([sprite boundingBox], [character collisionBoundingBox]);
-            
-            character.onGround = YES;
-            
-            CGPoint charPosition = character.desiredPosition;
-            CGPoint spritePosition = sprite.position;
-            
-            //below
-            if ((character.desiredPosition.y >= sprite.position.y + [sprite boundingBox].size.height)&&(character.onGround)) {
-                
-                charPosition.y = character.desiredPosition.y + intersection.size.height;
-                //otherwise it will fall hard
-                character.velocity = ccp(character.velocity.x, 0);
-                
-                character.desiredPosition = charPosition;
-                character.bear.position = character.desiredPosition;
-            }
-            
-            float charHeightOffset = [character.bear boundingBox].size.height / 2;
-            
-            //right side
-            if ((charPosition.x > spritePosition.x)&&(spritePosition.y+charHeightOffset == charPosition.y)) {
-                spritePosition.x -= intersection.size.width;
-            }else if ((charPosition.x < spritePosition.x)&&(spritePosition.y+charHeightOffset == charPosition.y)) {
-                spritePosition.x += intersection.size.width;
-            }
             
             if (elevator.type == itemGoldenKey) {
                 //enlazar type con filename mejor
@@ -494,6 +522,10 @@
                 item.itemType = itemGoldenKey;
                 [self.inventory addItem:item];
                 [self.bgTile removeChild:sprite cleanup:YES];
+                
+                [character holdsItem:item];
+                
+                return;
             }
             
             if (elevator.type == itemCoin) {
@@ -502,7 +534,37 @@
                 item.itemType = itemCoin;
                 [self.inventory addItem:item];
                 [self.bgTile removeChild:sprite cleanup:YES];
+                return;
             }
+            
+            CGRect intersection = CGRectIntersection([sprite boundingBox], [character collisionBoundingBox]);
+            
+            character.onGround = YES;
+            
+            CGPoint charPosition = character.desiredPosition;
+            CGPoint spritePosition = sprite.position;
+            
+            //below
+            
+            if ((character.desiredPosition.y >= sprite.position.y + [sprite boundingBox].size.height)&&(character.onGround)) {
+                
+                charPosition.y = character.desiredPosition.y + intersection.size.height;
+                //otherwise it will fall hard
+                character.velocity = ccp(character.velocity.x, 0);
+                
+                
+                character.desiredPosition = charPosition;
+                character.bear.position = character.desiredPosition;
+            }
+            
+            float charHeightOffset = [character.bear boundingBox].size.height / 2;
+            
+            if ((charPosition.x > spritePosition.x)&&(spritePosition.y+charHeightOffset == charPosition.y)) {
+                spritePosition.x -= intersection.size.width;
+            }else if ((charPosition.x < spritePosition.x)&&(spritePosition.y+charHeightOffset == charPosition.y)) {
+                spritePosition.x += intersection.size.width;
+            }
+      
             
             if (elevator.type == isMovable){
                 elevator.desiredPosition = spritePosition;
@@ -546,6 +608,9 @@
                     
                     p.velocity = ccp(p.velocity.x, 0.0);
                     p.onGround = YES;
+                    
+                    p.mightAsWellJump = NO;
+                    
                 } else if (tileIndx == 1) {
                     //tile is directly above player
                     p.desiredPosition = ccp(p.desiredPosition.x, p.bear.position.y - intersection.size.height);
@@ -553,11 +618,21 @@
                 } else if (tileIndx == 2 || tileIndx == 4 || tileIndx == 6) {
                     //tile is left of player
                     p.desiredPosition = ccp(p.desiredPosition.x + intersection.size.width, p.desiredPosition.y);
+                    
+                    if (p.movesAlone) {
+                        p.walkRight = YES;
+                        p.walkLeft = NO;
+                    }
+                    
                     //p.onLeftWall = YES;
                 } else if (tileIndx == 3 || tileIndx==5 || tileIndx == 7)   {
-                    //tile is right of player
+                  
                     p.desiredPosition = ccp(p.desiredPosition.x - intersection.size.width, p.desiredPosition.y);
-                    //p.onRightWall = YES;
+                    
+                    if (p.movesAlone) {
+                        p.walkLeft = YES;
+                        p.walkRight = NO;
+                    }
                 }
                 
                
@@ -580,14 +655,14 @@
     
     [self.dude update:dt];
     
-    [self.enemy update:dt];
-    [self checkForAndResolveCollisions:self.enemy];
-
+    //enemies
+    [self moveEnemies:self.enemies time:dt];
+    [self checkForEnemiesCollisions:self.enemies];
+ 
+    //Character with Enemies
+    [self checkForCollisionsWithEnemies:self.enemies withCharacter:self.dude];
+    
     [self moveElevators:self.elevatorList];
-    
-   // [self updateElevators:self.movableBlocks inTime:dt];
-    
-    self.dude.bear.position = self.dude.desiredPosition;
     
     //Character with tiles
     [self checkForAndResolveCollisions2:self.dude];
@@ -595,24 +670,15 @@
     //character with Elevators
     [self checkForCollisionsWithMovableObjects:self.elevatorList withCharacter:self.dude];
     
-    //character with Blocks
-   
+    //character with Items
     [self checkForCollisionsWithMovableObjects:self.items withCharacter:self.dude];
     [self checkForCollisionsWithMovableObjects:self.coins withCharacter:self.dude];
-
-
-    //Blocks with tiles
- //   [self checkForMovableObjectCollisions:self.movableBlocks];
     
+
+    //character with hazards
     
     [self checkForHazards:self.dude];
     
-     
-   // [self checkForItems:self.dude inLayer:self.bgTile.coins spriteFilename:@"coin.png"];
-   // [self checkForItems:self.dude inLayer:self.bgTile.fruits spriteFilename:@"fruit.png"];
-
-    
-   //[self setViewpointCenter: self.dude.bear.position];
 }
 
 -(void)setViewpointCenter:(CGPoint) position {
@@ -632,7 +698,12 @@
     self.bgTile.tileMap.position = viewPoint;
 }
 
-
+-(void) moveEnemies:(NSMutableArray *) enemies time:(ccTime )dt{
+    for (Character *enemy in enemies){
+        [enemy update:dt];
+        enemy.bear.position = enemy.desiredPosition;
+    }
+}
 
 -(void) moveElevators:(NSMutableArray *)elevators{
     for (Elevator *elevator in elevators) {
@@ -700,6 +771,28 @@
 }
 
 
+-(void) initEnemies{
+    self.enemies = [[NSMutableArray alloc] init];
+    
+    Character *enemy1 = [[Character alloc] initWithSprite:@"red.png"];
+    enemy1.bear.position = [self.bgTile getSpawnPointfromObjectNamed:@"EnemySpawn"];
+    [self.bgTile addChild:enemy1 z:1000];
+    enemy1.walkRight = YES;
+    enemy1.movesAlone = YES;
+    
+    Character *enemy2 = [[Character alloc] initWithSprite:@"red.png"];
+    enemy2.bear.position =  [self.bgTile getSpawnPointfromObjectNamed:@"EnemySpawn2"];
+
+    [self.bgTile addChild:enemy2 z:1000];
+    enemy2.walkRight = YES;
+    enemy2.movesAlone = YES;
+
+
+    [self.enemies addObject:enemy1];
+    [self.enemies addObject:enemy2];
+    
+    
+}
 
 #pragma mark Enter 
 
@@ -724,23 +817,15 @@
     self.dude.bear.position = [self.bgTile getSpawnPointfromObjectNamed:@"PlayerSpawn"];
     
     [self.bgTile addChild:self.dude z:15];
-    
-    self.enemy = [[Enemy alloc] initWithFile:@"red.png"];
-    self.enemy.position = [self.bgTile getSpawnPointfromObjectNamed:@"EnemySpawn"];
-    self.enemy.walkRight = YES;
-    
-    
-    [self.bgTile addChild:self.enemy];
-
-    
+     
+     
     self.inventory  = [[Inventory alloc] init];
     self.inventory.position = ccp(1000, 15);
     [self addChild:self.inventory];
     
-  
-     
+    [self initEnemies];
     [self initElevators];
-     
+        
 }
 
 
